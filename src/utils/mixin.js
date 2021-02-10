@@ -1,6 +1,6 @@
 import { mapActions, mapGetters } from 'vuex'
-import { addCss, themeList, removeAllCss } from './book'
-import { getReadTime, saveLocation } from './localStorage'
+import { addCss, themeList, removeAllCss, getReadTimeByMinute } from './book'
+import { saveLocation } from './localStorage'
 
 export const ebookMinx = {
   computed: {
@@ -15,18 +15,23 @@ export const ebookMinx = {
       'defaultTheme',
       'progress',
       'bookAvailable',
-      'section'
+      'section',
+      'cover',
+      'metadata',
+      'navigation'
     ]),
     themeList () {
       return themeList(this)
     },
     getSectionName () {
-      if (this.section) {
+      /* if (this.section) {
         const sectionInfo = this.currentBook.section(this.section)
-        if (sectionInfo && sectionInfo.href) {
+        if (sectionInfo && sectionInfo.href &&
+          this.currentBook && this.currentBook.navigation) {
           return this.currentBook.navigation.get(sectionInfo.href).label
         }
-      }
+      } */
+      return this.section ? this.navigation[this.section].label : ''
     }
   },
   methods: {
@@ -41,7 +46,10 @@ export const ebookMinx = {
       'setDefaultTheme',
       'setProgress',
       'setBookAvailable',
-      'setSection'
+      'setSection',
+      'setCover',
+      'setMetadata',
+      'setNavigation'
     ]),
     initGlobalStyle () {
       removeAllCss()
@@ -65,11 +73,13 @@ export const ebookMinx = {
     },
     refreshLocation () {
       const currentLocation = this.currentBook.rendition.currentLocation()
-      const startCfi = currentLocation.start.cfi
-      const progress = this.currentBook.locations.percentageFromCfi(startCfi)
-      this.setSection(currentLocation.start.index)
-      this.setProgress(Math.floor(progress * 100))
-      saveLocation(this.fileName, startCfi)
+      if (currentLocation && currentLocation.start) {
+        const startCfi = currentLocation.start.cfi
+        const progress = this.currentBook.locations.percentageFromCfi(startCfi)
+        this.setSection(currentLocation.start.index)
+        this.setProgress(Math.floor(progress * 100))
+        saveLocation(this.fileName, startCfi)
+      }
     },
     display (target, cb) {
       if (target) {
@@ -85,15 +95,13 @@ export const ebookMinx = {
       }
     },
     getReadTimeText () {
-      return this.$t('book.haveRead').replace('$1', this.getReadTimeByMinute(this.fileName))
+      return this.$t('book.haveRead').replace('$1', getReadTimeByMinute(this.fileName))
     },
-    getReadTimeByMinute (fileName) {
-      const readTime = getReadTime(fileName)
-      if (!readTime) {
-        return 0
-      } else {
-        return Math.ceil(readTime / 60)
-      }
+    hideTitleAndMenu () {
+      // this.$store.dispatch('setMenuVisible', false)
+      this.setMenuVisible(false)
+      this.setFontFamilyVisible(false)
+      this.setSettingVisible(-1)
     }
   }
 }

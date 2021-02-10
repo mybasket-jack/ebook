@@ -15,6 +15,7 @@
     saveTheme,
     getLocation
   } from '../../utils/localStorage'
+  import { flatten } from '../../utils/book'
 
   global.ePub = Epub
   export default {
@@ -45,12 +46,6 @@
           this.setSettingVisible(-1)
         }
         this.setMenuVisible(!this.menuVisible)
-      },
-      hideTitleAndMenu () {
-        // this.$store.dispatch('setMenuVisible', false)
-        this.setMenuVisible(false)
-        this.setFontFamilyVisible(false)
-        this.setSettingVisible(-1)
       },
       initFontSize () {
         // 设置字体大小
@@ -106,7 +101,7 @@
               contents.addStylesheet(`${process.env.VUE_APP_RES_URL}/fonts/tangerine.css`)
             ]
           ).then(() => {
-            console.log('字体全部加载完成')
+            // console.log('字体全部加载完成')
           })
         })
       },
@@ -130,12 +125,33 @@
           event.stopPropagation() */
         }, { passive: false })
       },
+      parseBook () {
+        this.book.loaded.metadata.then(metadata => {
+          this.setMetadata(metadata)
+        })
+        this.book.loaded.cover.then(cover => {
+          this.book.archive.createUrl(cover).then(url => {
+            this.setCover(url)
+          })
+        })
+        this.book.loaded.navigation.then(nav => {
+          const navItem = flatten(nav.toc)
+          function find (item, level = 0) {
+            return !item.parent ? level : find(navItem.filter(parentItem => parentItem.id === item.parent)[0], ++level)
+          }
+          navItem.forEach(item => {
+            item.level = find(item)
+          })
+          this.setNavigation(navItem)
+        })
+      },
       initEpub () {
         const url = process.env.VUE_APP_RES_URL + '/epub/' + this.fileName + '.epub'
         this.book = new Epub(url)
         this.setCurrentBook(this.book)
         this.initRendition()
         this.initGesture()
+        this.parseBook()
         // 分页
         this.book.ready.then(() => {
           return this.book.locations.generate(750 * (window.innerWidth / 375) *

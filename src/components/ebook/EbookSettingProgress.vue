@@ -1,5 +1,5 @@
 <template>
-  <transition>
+  <transition name="slide-up">
     <div class="setting-wrapper" v-show="menuVisible && settingVisible === 2">
       <div class="setting-progress">
         <span class="read-time-wrapper">{{ getReadTimeText() }}</span>

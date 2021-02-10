@@ -17,24 +17,27 @@
       </div>
     </transition>
     <ebook-setting-font></ebook-setting-font>
-    <ebook-setting-font-poppup></ebook-setting-font-poppup>
+    <ebook-setting-font-popup></ebook-setting-font-popup>
     <ebook-setting-theme></ebook-setting-theme>
     <ebook-setting-progress></ebook-setting-progress>
+    <ebook-slide></ebook-slide>
   </div>
 </template>
 <script>
   import { ebookMinx } from '../../utils/mixin'
   import EbookSettingFont from './EbookSettingFont'
-  import EbookSettingFontPoppup from './EbookSettingFontPopup'
+  import EbookSettingFontPopup from './EbookSettingFontPopup'
   import EbookSettingTheme from './EbookSettingTheme'
   import EbookSettingProgress from './EbookSettingProgress'
+  import EbookSlide from './EbookSlide'
   export default {
     mixins: [ebookMinx],
     components: {
       EbookSettingFont,
-      EbookSettingFontPoppup,
+      EbookSettingFontPopup,
       EbookSettingTheme,
-      EbookSettingProgress
+      EbookSettingProgress,
+      EbookSlide
     },
     methods: {
       showSetting (key) {
