@@ -13,7 +13,8 @@ const book = {
     section: 0,
     cover: null,
     metadata: null,
-    navigation: null
+    navigation: null,
+    offsetY: null
   },
   mutations: {
     SET_FILE_NAME: (state, fileName) => {
@@ -57,6 +58,9 @@ const book = {
     },
     SET_NAVIGATION: (state, navigation) => {
       state.navigation = navigation
+    },
+    SET_OFFSETY: (state, offsetY) => {
+      state.offsetY = offsetY
     }
   },
   modules: {

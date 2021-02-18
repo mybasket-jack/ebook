@@ -1,5 +1,9 @@
 <template>
   <div class="ebook-reader">
+    <div class="ebook-reader-mask"
+          @click="onMaskClick"
+          @touchmove="move"
+          @touchend="moveEnd"></div>
     <div id="read"></div>
   </div>
 </template>
@@ -20,10 +24,38 @@
   global.ePub = Epub
   export default {
     data () {
-      return {}
+      return {
+        firstOffsetY: null
+      }
     },
     mixins: [ebookMinx],
     methods: {
+      move (e) {
+        let offsetY = 0
+        if (this.firstOffsetY) {
+          offsetY = e.changedTouches[0].clientY - this.firstOffsetY
+          this.setOffsetY(offsetY)
+        } else {
+          this.firstOffsetY = e.changedTouches[0].clientY
+        }
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      moveEnd (e) {
+        this.setOffsetY(0)
+        this.firstOffsetY = null
+      },
+      onMaskClick (e) {
+        const offsetX = e.offsetX
+        const width = window.innerWidth
+        if (offsetX > 0 && offsetX < width * 0.3) {
+          this.prevPage()
+        } else if (offsetX > 0 && offsetX > width * 0.7) {
+          this.nextPage()
+        } else {
+          this.toggleTitleAndMenu()
+        }
+      },
       prevPage () {
         if (this.rendition) {
           this.rendition.prev().then(() => {
@@ -171,5 +203,18 @@
   }
 </script>
 <style lang="scss" rel="stylesheet/scss" scoped>
-
+  @import '../../assets/styles/global';
+  .ebook-reader {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    .ebook-reader-mask {
+      position: absolute;
+      z-index: 150;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
 </style>
