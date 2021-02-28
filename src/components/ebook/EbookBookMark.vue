@@ -1,23 +1,132 @@
 <template>
-  <div class="ebook-bookmark">
+  <div class="ebook-bookmark" ref="bookmark">
     <div class="ebook-bookmark-text-wrapper">
-      <div class="ebook-bookmark-down-wrapper">
+      <div class="ebook-bookmark-down-wrapper" ref="iconDown">
         <span class="icon-down"></span>
       </div>
       <div class="ebook-bookmark-text">{{ text }}</div>
     </div>
-    <div class="ebook-bookmark-icon-wrapper">
-      <span class="icon"></span>
+    <div class="ebook-bookmark-icon-wrapper" :style="isFixed ? fixedStyle : {}">
+      <bookmark :color="color" :height="35" :width="15"/>
     </div>
   </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
+  import Bookmark from '../common/Bookmark'
+  import { realPx } from '../../utils/utils'
+  import { ebookMinx } from '../../utils/mixin'
+  const BLUE = '#346cbc'
+  const WHITE = '#fff'
   export default {
     name: 'EbookBookMark',
+    mixins: [ebookMinx],
+    components: { Bookmark },
+    computed: {
+      height () {
+        return realPx(35)
+      },
+      threshold () {
+        return realPx(55)
+      },
+      fixedStyle () {
+        return {
+          position: 'fixed',
+          right: `${(window.innerWidth - this.$refs.bookmark.clientWidth) / 2}px`,
+          top: 0
+        }
+      }
+    },
+    watch: {
+      offsetY (v) {
+        if (!this.bookAvailable || this.menuVisible || this.settingVisible >= 0) {
+          return
+        }
+        if (v >= this.height && v <= this.threshold) {
+         this.beforeThreshold(v)
+        } else if (v >= this.threshold) {
+         this.afterThreshold(v)
+        } else if (v > 0 && v < this.height) {
+          this.beforeHeight()
+        } else if (v === 0) {
+          this.reStore()
+        }
+      }
+    },
     data () {
       return {
-        text: this.$t('book.pulldownAddMark')
+        text: '',
+        color: WHITE,
+        isFixed: false
+      }
+    },
+    methods: {
+      addBookmark () {
+        const currentLocation = this.currentBook.rendition.currentLocation()
+        const cfibase = currentLocation.start.cfi.replace(/!.*/, '')
+        const cfistart = currentLocation.start.cfi.replace(/.*!/, '').replace(/\)$/, '')
+        const cfiend = currentLocation.end.cfi.replace(/.*!/, '').replace(/\)$/, '')
+        const cfirange = `${cfibase}!${cfistart},${cfiend})`
+        this.currentBook.getRange(cfirange).then(range => {
+          console.log(range.toString())
+          const text = range.toString().replace(/\s\s/g, '')
+          console.log(text)
+        })
+      },
+      removeBookmark () {
+
+      },
+      reStore () {
+        // 状态4：恢复初始状态， 归为
+        setTimeout(() => {
+          this.$refs.bookmark.style.top = `${-this.height}px`
+          this.$refs.iconDown.style.transform = 'rotate(0deg)'
+        }, 200)
+        if (this.isFixed) {
+          this.setIsBookmark(true)
+          this.addBookmark()
+        } else {
+          this.setIsBookmark(false)
+          this.removeBookmark()
+        }
+      },
+      beforeHeight () {
+        // 状态1： 未超过书签高度
+        if (this.isBookmark) {
+          this.text = this.$t('book.pulldownDeleteMark')
+          this.color = BLUE
+          this.isFixed = true
+        } else {
+          this.text = this.$t('book.pulldownAddMark')
+          this.color = WHITE
+          this.isFixed = false
+        }
+      },
+      beforeThreshold (v) {
+        // 状态2： 未到达零界状态
+        this.$refs.bookmark.style.top = `${-v}px`
+        this.beforeHeight()
+        const iconDown = this.$refs.iconDown
+        if (iconDown.style.transform === 'rotate(180deg)') {
+          iconDown.style.transform = 'rotate(0deg)'
+        }
+      },
+      afterThreshold (v) {
+        // 状态3： 超越零界状态
+        this.$refs.bookmark.style.top = `${-v}px`
+        if (this.isBookmark) {
+          this.text = this.$t('book.releaseDeleteMark')
+          this.color = WHITE
+          this.isFixed = false
+        } else {
+          this.text = this.$t('book.releaseAddMark')
+          this.color = BLUE
+          this.isFixed = true
+        }
+        const iconDown = this.$refs.iconDown
+        if (iconDown.style.transform === '' || iconDown.style.transform === 'rotate(0deg)') {
+          iconDown.style.transform = 'rotate(180deg)'
+        }
       }
     }
   }
@@ -52,7 +161,7 @@
       position: absolute;
       right: 0;
       bottom: 0;
-      margin-left: px2rem(15);
+      margin-right: px2rem(15);
     }
   }
 </style>

@@ -19,7 +19,8 @@ export const ebookMinx = {
       'cover',
       'metadata',
       'navigation',
-      'offsetY'
+      'offsetY',
+      'isBookmark'
     ]),
     themeList () {
       return themeList(this)
@@ -51,7 +52,8 @@ export const ebookMinx = {
       'setCover',
       'setMetadata',
       'setNavigation',
-      'setOffsetY'
+      'setOffsetY',
+      'setIsBookmark'
     ]),
     initGlobalStyle () {
       removeAllCss()

@@ -1,13 +1,13 @@
 <template>
     <div class="ebook" ref="ebook">
-      <ebook-title></ebook-title>
-      <ebook-reader></ebook-reader>
-      <ebook-menu></ebook-menu>
       <ebook-book-mark></ebook-book-mark>
+      <ebook-reader></ebook-reader>
+      <ebook-title></ebook-title>
+      <ebook-menu></ebook-menu>
     </div>
 </template>
 
-<script>
+<script type="text/ecmascript-6">
   import EbookReader from '../../components/ebook/EbookReader'
   import EbookTitle from '../../components/ebook/EbookTitle'
   import EbookMenu from '../../components/ebook/EbookMenu'
@@ -25,10 +25,12 @@
       },
       watch: {
         offsetY (v) {
-          if (v > 0) {
-            this.move(v)
-          } else if (v === 0) {
-            this.restore()
+          if (!this.menuVisible && this.bookAvailable) {
+            if (v > 0) {
+              this.move(v)
+            } else if (v === 0) {
+              this.restore()
+            }
           }
         }
       },

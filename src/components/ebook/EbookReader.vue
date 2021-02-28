@@ -153,8 +153,8 @@
           } else {
             this.toggleTitleAndMenu()
           }
-/*          event.preventDefault()
-          event.stopPropagation() */
+          event.preventDefault()
+          event.stopPropagation()
         }, { passive: false })
       },
       parseBook () {
