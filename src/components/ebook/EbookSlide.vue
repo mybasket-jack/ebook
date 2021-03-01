@@ -5,7 +5,9 @@
         <div class="content" v-if="settingVisible === 3">
           <div class="content-page-wrapper" v-if="bookAvailable">
             <div class="content-page">
-              <component :is="currentTab === 1 ? content : bookmark"/>
+              <keep-alive>
+                <component :is="currentTab === 1 ? content : bookmark"/>
+              </keep-alive>
             </div>
             <div class="content-page-tab">
               <div class="content-page-tab-item"
@@ -32,6 +34,7 @@
   import { ebookMinx } from '../../utils/mixin'
   import EbookSlideContents from './EbookSlideContents'
   import EbookLoading from './EbookLoading'
+  import EbookSlideBookMark from './EbookSlideBookMark'
   export default {
     name: 'EbookSlide',
     components: { EbookLoading },
@@ -40,7 +43,7 @@
       return {
         currentTab: 1,
         content: EbookSlideContents,
-        bookmark: null
+        bookmark: EbookSlideBookMark
       }
     },
     methods: {

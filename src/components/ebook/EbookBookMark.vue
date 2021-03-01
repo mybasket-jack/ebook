@@ -16,6 +16,8 @@
   import Bookmark from '../common/Bookmark'
   import { realPx } from '../../utils/utils'
   import { ebookMinx } from '../../utils/mixin'
+  import { saveBookMark, getBookMark } from '../../utils/localStorage'
+
   const BLUE = '#346cbc'
   const WHITE = '#fff'
   export default {
@@ -51,6 +53,14 @@
         } else if (v === 0) {
           this.reStore()
         }
+      },
+      isBookmark (v) {
+        this.isFixed = v
+        if (v) {
+          this.color = BLUE
+        } else {
+          this.color = WHITE
+        }
       }
     },
     data () {
@@ -62,19 +72,34 @@
     },
     methods: {
       addBookmark () {
+        let bookmark = getBookMark(this.fileName)
+        if (!bookmark) {
+          bookmark = []
+        }
         const currentLocation = this.currentBook.rendition.currentLocation()
-        const cfibase = currentLocation.start.cfi.replace(/!.*/, '')
-        const cfistart = currentLocation.start.cfi.replace(/.*!/, '').replace(/\)$/, '')
-        const cfiend = currentLocation.end.cfi.replace(/.*!/, '').replace(/\)$/, '')
-        const cfirange = `${cfibase}!${cfistart},${cfiend})`
-        this.currentBook.getRange(cfirange).then(range => {
-          console.log(range.toString())
+        const cfiBase = currentLocation.start.cfi.replace(/!.*/, '')
+        const cfiStart = currentLocation.start.cfi.replace(/.*!/, '').replace(/\)$/, '')
+        const cfiEnd = currentLocation.end.cfi.replace(/.*!/, '').replace(/\)$/, '')
+        const cfiRange = `${cfiBase}!,${cfiStart},${cfiEnd})`
+        const cfi = currentLocation.start.cfi
+        this.currentBook.getRange(cfiRange).then(range => {
           const text = range.toString().replace(/\s\s/g, '')
-          console.log(text)
+          bookmark.push({
+            cfi: cfi,
+            text: text
+          })
+          this.setIsBookmark(true)
+          saveBookMark(this.fileName, bookmark)
         })
       },
       removeBookmark () {
-
+        const currentLocation = this.currentBook.rendition.currentLocation()
+        const cfi = currentLocation.start.cfi
+        this.bookmark = getBookMark(this.fileName)
+        if (this.bookmark) {
+          saveBookMark(this.fileName, this.bookmark.filter(item => item.cfi !== cfi))
+        }
+        this.setIsBookmark(false)
       },
       reStore () {
         // 状态4：恢复初始状态， 归为

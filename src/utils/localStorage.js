@@ -83,3 +83,11 @@ export function saveReadTime (fileName, readTime) {
 export function getReadTime (fileName) {
   return getBookObject(fileName, 'readTime')
 }
+
+export function getBookMark (fileName) {
+  return getBookObject(fileName, 'bookMark')
+}
+
+export function saveBookMark (fileName, bookMark) {
+  setBookObject(fileName, 'bookMark', bookMark)
+}
