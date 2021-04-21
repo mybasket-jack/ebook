@@ -3,7 +3,11 @@
     <div class="ebook-reader-mask"
           @click="onMaskClick"
           @touchmove="move"
-          @touchend="moveEnd"></div>
+          @touchend="moveEnd"
+          @mousedown.left="onMouseEnter"
+          @mousemove.left="onMouseMove"
+          @mouseup.left="onMouseEnd"
+    ></div>
     <div id="read"></div>
   </div>
 </template>
@@ -30,6 +34,21 @@
     },
     mixins: [ebookMinx],
     methods: {
+      onMouseEnter (e) {
+        this.mouseState = 1
+        e.preventDefault()
+        e.stopPropagation()
+      },
+      onMouseMove (e) {
+        if (this.mouseState === 1) {
+
+        } else if (this.mouseState === 2) {
+
+        }
+      },
+      onMouseEnd (e) {
+
+      },
       move (e) {
         let offsetY = 0
         if (this.firstOffsetY) {

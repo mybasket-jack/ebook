@@ -141,11 +141,15 @@
       box-sizing: border-box;
       .slide-contents-search-input-wrapper {
         flex: 1;
+        border-radius: px2rem(3);
         @include center;
         .slide-contents-search-icon {
           flex: 0 0 px2rem(28);
           font-size: px2rem(12);
           @include center;
+          .icon-search {
+            font-size: px2rem(12);
+          }
         }
         .slide-contents-search-input {
           flex: 1;
@@ -173,6 +177,7 @@
       box-sizing: border-box;
       .slide-contents-book-img-wrapper {
         flex: 0 0 px2rem(45);
+        box-sizing: border-box;
         .slide-contents-book-img {
           width: px2rem(45);
           height: px2rem(60);
@@ -180,22 +185,21 @@
       }
       .slide-contents-book-info-wrapper {
         flex: 1;
-        padding: 0 px2rem(10);
-        box-sizing: border-box;
+        @include columnLeft
         .slide-contents-book-title {
           //  375*0.85 = 318.75 -30 =288.75-20=268.75-45=223.75-70=153.75
-          width: px2rem(153.75);
+          // width: px2rem(153.75);
           font-size: px2rem(14);
           line-height: px2rem(16);
           padding: 0 px2rem(10);
           box-sizing: border-box;
           @include left
           .slide-contents-book-title-text {
-            @include ellipse2(2)
+            @include ellipse2(1)
           }
         }
         .slide-contents-book-author {
-          width: px2rem(153.75);
+          //width: px2rem(153.75);
           font-size: px2rem(12);
           line-height: px2rem(14);
           padding: 0 px2rem(10);
@@ -203,13 +207,13 @@
           margin-top: px2rem(5);
           @include left
           .slide-contents-book-author-text {
-            @include ellipse2(2)
+            @include ellipse2(1)
           }
         }
       }
       .slide-contents-book-progress-wrapper {
         flex: 0 0 px2rem(70);
-        margin-top: px2rem(5);
+        @include columnLeft
         .slide-contents-book-progress {
           .progress {
             font-size: px2rem(14);
@@ -223,6 +227,8 @@
         }
         .slide-contents-book-time {
           font-size: px2rem(12);
+          line-height: px2rem(14);
+          margin-top: px2rem(5);
         }
       }
     }
